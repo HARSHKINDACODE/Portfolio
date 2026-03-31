@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Harsh Soni – Portfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Satisfy&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind + GSAP -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'system-ui'] },
+          colors: {
+            softBg: '#fef8ff',
+            softAccent: '#f7e7ff',
+            softPurple: '#a78bfa',
+            softPink: '#f9a8d4',
+            softBlue: '#7dd3fc',
+          },
+        },
+      },
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Custom styles -->
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      transition: background 0.4s ease, color 0.4s ease;
+    }
+
+    .nav-font {
+      font-family: 'Sora', system-ui, sans-serif;
+    }
+
+    /* DARK MODE ------------------------------------------------------ */
+    body.dark {
+      background: #0f0f16;
+      color: #f1f1f7;
+    }
+
+    .dark .nav-inner {
+      background: rgba(22, 22, 32, 0.75) !important;
+      border-color: rgba(255,255,255,0.06) !important;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.45) !important;
+    }
+
+    .dark .skill,
+    .dark .proj {
+      background: rgba(30,30,40,0.85);
+      border-color: rgba(255,255,255,0.06);
+      color: #f0f0ff;
+    }
+
+    .dark a {
+      color: #c7bfff;
+    }
+
+    .dark h1, .dark h2 {
+      color: #ececff;
+    }
+
+    .dark #navGlow {
+      background: linear-gradient(
+        to right,
+        rgba(167,139,250,0.65),
+        rgba(249,168,212,0.55),
+        rgba(125,211,252,0.55)
+      ) !important;
+    }
+
+    /* blobs in dark */
+    body.dark .bg-softPink\/40 { background-color: rgba(249,168,212,0.15) !important; }
+    body.dark .bg-softBlue\/40 { background-color: rgba(125,211,252,0.15) !important; }
+    body.dark .bg-softPurple\/30 { background-color: rgba(167,139,250,0.12) !important; }
+
+    /* theme toggle dark */
+    body.dark #themeToggle {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.1);
+    }
+
+    body.dark #themeCircle {
+      background: linear-gradient(to bottom right, #6d28d9, #a855f7);
+      box-shadow: 0 0 12px rgba(168,85,247,0.7);
+    }
+
+    /* Loader fade-out */
+    .loader-hide {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      pointer-events: none;
+    }
+
+    /* Loader ring spin */
+    @keyframes spinSlow {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spinSlow 2.2s linear infinite;
+    }
+
+    /* Floating navbar blob */
+    @keyframes floatBlob {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0px); }
+    }
+    .nav-blob-float {
+      animation: floatBlob 3.5s ease-in-out infinite;
+    }
+
+    /* Navbar scroll shrink */
+    #navbar {
+      padding-inline: 1.5rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      transition: padding 0.3s ease;
+    }
+    #navbar.nav-scrolled {
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    #navbar .nav-inner {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, padding 0.3s ease, border-color 0.3s ease;
+    }
+    #navbar.nav-scrolled .nav-inner {
+      transform: translateY(-4px) scale(0.97);
+    }
+
+    #navLogo:hover {
+      transform: scale(1.06) rotateZ(3deg);
+      box-shadow: 0 0 12px rgba(167, 139, 250, 0.6),
+                  0 0 20px rgba(249, 168, 212, 0.45);
+    }
+
+    /* Pastel shimmer animation */
+    @keyframes pastelShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Avatar shimmer wrapper */
+    #avatarCard::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 2.5px;
+      border-radius: 2rem;
+      background: linear-gradient(
+        120deg,
+        rgba(167, 139, 250, 0.45),
+        rgba(249, 168, 212, 0.45),
+        rgba(125, 211, 252, 0.45),
+        rgba(167, 139, 250, 0.45)
+      );
+      background-size: 300% 300%;
+      animation: pastelShimmer 6.5s ease-in-out infinite;
+      -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+      mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: -1;
+    }
+
+    /* Dark mode shimmer changed to subtle neon */
+    body.dark #avatarCard::before {
+      background: linear-gradient(
+        120deg,
+        rgba(147, 51, 234, 0.45),
+        rgba(168, 85, 247, 0.45),
+        rgba(109, 40, 217, 0.45),
+        rgba(147, 51, 234, 0.45)
+      );
+      animation: pastelShimmer 5s ease-in-out infinite;
+    }
+
+    #avatarCard:hover {
+      box-shadow: 0 0 22px rgba(167, 139, 250, 0.25);
+    }
+
+    body.dark #avatarCard:hover {
+      box-shadow: 0 0 28px rgba(147, 51, 234, 0.35);
+    }
+
+    /* MOBILE LAYOUT FIXES ------------------------------------------- */
+    @media (max-width: 640px) {
+
+      #navbar {
+        padding: 0.5rem 1rem !important;
+        top: 0.75rem !important;
+      }
+
+      #navbar .nav-inner {
+        padding: 0.6rem 0.9rem !important;
+      }
+
+      #hero {
+        gap: 2.5rem !important;
+        padding-top: 8rem !important;
+        text-align: center;
+      }
+
+      #hero h1 {
+        font-size: 1.9rem !important;
+        line-height: 1.3 !important;
+      }
+
+      #hero p {
+        font-size: 0.95rem !important;
+      }
+
+      #hero .flex.gap-4 {
+        justify-content: center;
+      }
+
+      #avatarCard {
+        width: 200px !important;
+        height: 260px !important;
+        margin: 0 auto;
+        transform: scale(0.92);
+      }
+
+      #about .rounded-3xl {
+        padding: 1.5rem !important;
+      }
+
+      #skills .grid {
+        gap: 0.9rem !important;
+      }
+
+      .skill {
+        padding: 0.7rem !important;
+        font-size: 0.85rem !important;
+      }
+
+      .proj {
+        padding: 1.2rem !important;
+      }
+
+      #contact a.px-6 {
+        padding: 0.55rem 1.4rem !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-softBg text-slate-800 overflow-x-hidden">
+
+  <!-- Background blobs -->
+  <div class="fixed inset-0 -z-20 overflow-hidden">
+    <div class="absolute -top-40 -left-24 w-80 h-80 bg-softPink/40 rounded-full blur-[90px]"></div>
+    <div class="absolute top-40 -right-20 w-96 h-96 bg-softBlue/40 rounded-full blur-[100px]"></div>
+    <div class="absolute bottom-[-6rem] left-10 w-72 h-72 bg-softPurple/30 rounded-full blur-[90px]"></div>
+  </div>
+
+  <!-- LOADER -->
+  <div id="loader" class="fixed inset-0 z-[100] bg-softBg flex items-center justify-center">
+    <div class="relative flex items-center justify-center">
+      <div class="w-24 h-24 rounded-full border-4 border-softPurple/40 border-top-softPink/70 animate-spin-slow"></div>
+      <div
+        class="absolute text-5xl bg-gradient-to-tr from-softPurple to-softPink text-transparent bg-clip-text drop-shadow-[0_0_18px_rgba(167,139,250,0.75)]"
+        style="font-family: 'Satisfy', cursive;">
+        HS
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar" class="fixed top-4 left-0 w-full z-40 transition-all duration-300">
+    <div class="max-w-6xl mx-auto">
+      <div
+        class="nav-inner nav-blob-float relative flex items-center justify-between rounded-full
+               bg-gradient-to-r from-softPurple/18 via-white/70 to-softBlue/18
+               backdrop-blur-xl border border-white/70
+               shadow-[0_18px_45px_rgba(15,23,42,0.18)] px-5 py-3">
+
+        <!-- Logo -->
+        <div id="navLogo"
+          class="w-9 h-9 rounded-full 
+           bg-gradient-to-tr from-softPurple to-softPink 
+           dark:from-[#4c1d95] dark:to-[#a855f7]
+           flex items-center justify-center shadow-md
+           transition-all duration-300 cursor-pointer">
+          <span class="text-white text-xs font-satisfy tracking-wide">HS</span>
+        </div>
+
+        <!-- Desktop nav -->
+        <div id="navWrapper" class="relative hidden md:flex items-center gap-6 nav-font text-sm text-slate-600">
+
+          <!-- Theme toggle -->
+          <button id="themeToggle"
+            class="ml-4 flex items-center w-12 h-6 rounded-full bg-white/50 backdrop-blur cursor-pointer relative shadow-inner border border-white/40 transition">
+            <span id="themeCircle"
+              class="absolute left-1 w-4 h-4 rounded-full bg-gradient-to-tr from-softPurple to-softPink shadow-md transition-all duration-300"></span>
+          </button>
+
+          <!-- Glow bar -->
+          <div
+            id="navGlow"
+            class="absolute inset-y-0 my-1 w-0 rounded-full
+                   bg-gradient-to-r from-softPurple/40 via-softPink/35 to-softBlue/40
+                   blur-[1px] transition-all duration-300 ease-out -z-10"></div>
+
+          <a href="#about" class="nav-item relative rounded-full px-3 py-1 hover:text-slate-900 transition">About</a>
+          <a href="#skills" class="nav-item relative rounded-full px-3 py-1 hover:text-slate-900 transition">Skills</a>
+          <a href="#projects" class="nav-item relative rounded-full px-3 py-1 hover:text-slate-900 transition">Projects</a>
+          <a href="#contact" class="nav-item relative rounded-full px-3 py-1 hover:text-slate-900 transition">Contact</a>
+        </div>
+
+        <!-- MOBILE MENU BUTTON -->
+        <button id="menuBtn"
+          class="md:hidden flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/60 backdrop-blur border border-white/40 text-slate-600 text-sm shadow nav-font">
+          Menu
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MOBILE DROPDOWN MENU -->
+  <div id="mobileMenu"
+    class="md:hidden fixed top-20 right-4 w-48 rounded-2xl bg-white/80 dark:bg-[#1c1c26] backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-xl p-4 space-y-3 hidden z-30">
+    <a href="#about" class="block text-slate-700 dark:text-slate-200 text-sm mobile-link">About</a>
+    <a href="#skills" class="block text-slate-700 dark:text-slate-200 text-sm mobile-link">Skills</a>
+    <a href="#projects" class="block text-slate-700 dark:text-slate-200 text-sm mobile-link">Projects</a>
+    <a href="#contact" class="block text-slate-700 dark:text-slate-200 text-sm mobile-link">Contact</a>
+
+    <!-- MOBILE THEME TOGGLE -->
+    <button id="themeToggleMobile"
+      class="mt-3 w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/60 dark:bg-white/10 backdrop-blur border border-white/40 dark:border-white/10 text-sm">
+      <span>Dark Mode</span>
+      <span id="themeCircleMobile"
+        class="w-4 h-4 rounded-full bg-gradient-to-tr from-softPurple to-softPink dark:from-[#4c1d95] dark:to-[#a855f7] shadow transition-all duration-300"></span>
+    </button>
+  </div>
+
+  <!-- HERO -->
+  <section
+    id="hero"
+    class="min-h-[85vh] flex flex-col md:flex-row items-center justify-center gap-16 px-4 max-w-6xl mx-auto pt-32">
+
+    <!-- Left text -->
+    <div class="flex-1 space-y-6 opacity-0 heroText">
+      <p class="text-xs tracking-[0.3em] text-slate-500 dark:text-slate-300 uppercase">Portfolio</p>
+      <h1 class="text-4xl md:text-6xl font-semibold leading-tight dark:text-white">
+        Hi, I'm <span class="text-softPurple dark:text-[#c7bfff]">Harsh Soni</span>
+      </h1>
+      <p class="text-slate-600 dark:text-slate-300 text-base md:text-lg max-w-xl">
+        A B.Tech CSE (AIML) student exploring backend, AI, creative UI, and smooth web experiences.
+      </p>
+      <div class="flex gap-4 pt-3">
+        <a href="#projects" class="px-5 py-2.5 bg-slate-900 text-white rounded-full shadow hover:opacity-90 transition">
+          View Projects
+        </a>
+        <a href="#contact" class="px-5 py-2.5 border border-slate-400/40 dark:border-slate-300/30 rounded-full hover:bg-white/60 dark:hover:bg-white/10 transition">
+          Contact
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: Avatar Card -->
+    <div
+      id="avatarCard"
+      class="relative w-64 h-80 rounded-[2rem]
+         bg-gradient-to-br from-softAccent via-white to-softBlue/30
+         dark:bg-gradient-to-br dark:from-[#1a1a26] dark:via-[#101018] dark:to-[#1c1c26]
+         shadow-xl overflow-hidden opacity-0 transition-all duration-500">
+
+      <!-- Glow blobs -->
+      <div class="absolute -top-12 -right-10 w-32 h-32
+                    bg-softPurple/40 dark:bg-[#6d28d9]/20 rounded-full blur-2xl"></div>
+
+      <div class="absolute -bottom-12 left-10 w-32 h-32
+                    bg-softPink/40 dark:bg-[#a855f7]/20 rounded-full blur-2xl"></div>
+
+      <!-- Avatar content -->
+      <div class="relative z-10 flex flex-col items-center justify-center h-full gap-4">
+        <div class="w-28 h-28 rounded-full
+                      bg-gradient-to-tr from-softPurple to-softPink
+                      dark:bg-gradient-to-br dark:from-[#4c1d95] dark:to-[#a855f7]
+                      shadow-xl flex items-center justify-center">
+          <div class="w-20 h-20 rounded-full
+                        bg-white/90 dark:bg-[#151520]
+                        flex items-center justify-center
+                        text-softPurple dark:text-[#c7bfff]
+                        font-bold text-2xl transition-all">
+            HS
+          </div>
+        </div>
+        <p class="font-semibold text-slate-800 dark:text-white">Harsh Soni</p>
+        <p class="text-xs text-slate-500 dark:text-slate-300">Student · Developer · Learner</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="max-w-5xl mx-auto px-4 py-20 opacity-0 aboutCard">
+    <div class="rounded-3xl bg-white/70 dark:bg-white/10 backdrop-blur-xl border border-white/60 dark:border-white/10 shadow-xl p-8">
+      <h2 class="text-3xl font-semibold mb-4 dark:text-white">About Me</h2>
+      <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+        Hi I’m Harsh, a BTech CSE (AIML) student who loves building things—whether it’s a clean backend, an aesthetic design, 
+        or a full project that solves a real problem. I’m constantly learning, experimenting, and trying to get better at what I do. 
+        Tech, creativity, and improvement pretty much define me right now. I’m still early in my journey, 
+        but I’m hungry to grow and make work I can be proud of.
+      </p>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="max-w-5xl mx-auto px-4 py-20">
+    <h2 class="text-3xl font-semibold mb-6 dark:text-white">Skills</h2>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">HTML</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">CSS / Tailwind</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">JavaScript</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">Python</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">Django / Flask</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">Git / GitHub</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">UI Design</div>
+      <div class="skill opacity-0 rounded-2xl bg-white/80 dark:bg-white/10 backdrop-blur border dark:border-white/10 px-4 py-3 shadow text-center">+ More</div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="max-w-5xl mx-auto px-4 py-20">
+    <h2 class="text-3xl font-semibold mb-6 dark:text-white">Projects</h2>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <article class="proj opacity-0 rounded-3xl bg-white/80 dark:bg-white/10 border dark:border-white/10 backdrop-blur shadow-xl p-6">
+        <h3 class="text-xl font-semibold mb-2 dark:text-white">Arogyam v1.0</h3>
+        <p class="text-slate-600 dark:text-slate-300 text-sm mb-3">
+          Under Construction🚧
+        </p>
+        <p class="text-xs text-slate-400 dark:text-slate-300 mb-2">Tech: HTML · CSS · Python</p>
+        <a href="#" class="text-softPurple dark:text-[#c7bfff] text-sm hover:underline">View Code →</a>
+      </article>
+
+      <article class="proj opacity-0 rounded-3xl bg-white/80 dark:bg-white/10 border dark:border-white/10 backdrop-blur shadow-xl p-6">
+        <h3 class="text-xl font-semibold mb-2 dark:text-white">Under Construction🚧</h3>
+        <p class="text-slate-600 dark:text-slate-300 text-sm mb-3">
+          Under Construction🚧
+        </p>
+        <p class="text-xs text-slate-400 dark:text-slate-300 mb-2">Tech: Python · Django</p>
+        <a href="#" class="text-softPurple dark:text-[#c7bfff] text-sm hover:underline">View Code →</a>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="max-w-5xl mx-auto px-4 py-20">
+    <h2 class="text-3xl font-semibold text-center mb-4 dark:text-white">Contact</h2>
+    <p class="text-center text-slate-600 dark:text-slate-300 max-w-xl mx-auto mb-6">
+      If you'd like to collaborate, discuss ideas, or just say hi, feel free to reach out.
+    </p>
+
+    <div class="flex flex-col items-center gap-4 contactBlock opacity-0">
+      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=harshkindacode@gmail.com"
+         target="_blank"
+         class="px-6 py-2.5 rounded-full bg-slate-900 text-white shadow hover:opacity-90 transition">
+        Email Me
+      </a>
+
+      <div class="flex gap-4 text-sm text-slate-600 dark:text-slate-300">
+        <a href="https://github.com/HARSHKINDACODE" class="hover:text-softPurple dark:hover:text-[#c7bfff]">GitHub</a>
+        <span>•</span>
+        <a href="https://www.linkedin.com/in/harsh-soni1118?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="hover:text-softPurple dark:hover:text-[#c7bfff]">LinkedIn</a>
+        <span>•</span>
+        <a href="#" class="hover:text-softPurple dark:hover:text-[#c7bfff]">Portfolio PDF</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/60 dark:border-white/10 bg-white/40 dark:bg-white/5 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      <span>© 2025 Harsh Soni. All rights reserved.</span>
+      <span>Built with HTML · Tailwind · GSAP</span>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+
+    // HERO entrance
+    gsap.to(".heroText", {
+      opacity: 1,
+      y: isMobile ? -6 : -10,
+      duration: isMobile ? 0.8 : 1,
+      delay: 0.35,
+      ease: "power2.out",
+    });
+
+    gsap.to("#avatarCard", {
+      opacity: 1,
+      y: isMobile ? -4 : -8,
+      duration: isMobile ? 0.8 : 1,
+      delay: 0.5,
+      ease: "power2.out",
+    });
+
+    // About
+    gsap.to(".aboutCard", {
+      scrollTrigger: { trigger: ".aboutCard", start: "top 80%" },
+      opacity: 1,
+      y: -20,
+      duration: 1,
+      ease: "power2.out",
+    });
+
+    // Skills stagger
+    gsap.utils.toArray(".skill").forEach((el, i) => {
+      gsap.to(el, {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        opacity: 1,
+        y: -10,
+        duration: 0.5,
+        delay: i * 0.08,
+        ease: "power1.out",
+      });
+    });
+
+    // Projects
+    gsap.utils.toArray(".proj").forEach((el, i) => {
+      gsap.to(el, {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        opacity: 1,
+        y: -15,
+        duration: 0.7,
+        delay: i * 0.12,
+        ease: "power2.out",
+      });
+    });
+
+    // Contact
+    gsap.utils.toArray(".contactBlock").forEach((el, i) => {
+      gsap.to(el, {
+        scrollTrigger: { trigger: el, start: "top 90%" },
+        opacity: 1,
+        y: -10,
+        duration: 0.7,
+        delay: i * 0.1,
+      });
+    });
+
+    // Avatar tilt
+    const avatarCard = document.getElementById("avatarCard");
+    if (avatarCard && !isMobile) {
+      avatarCard.addEventListener("mousemove", (e) => {
+        const rect = avatarCard.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const dampen = document.body.classList.contains("dark") ? 55 : 40;
+        const rotateY = ((x - rect.width / 2) / rect.width) * dampen;
+        const rotateX = -((y - rect.height / 2) / rect.height) * dampen;
+
+        avatarCard.style.transform =
+          `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+
+      avatarCard.addEventListener("mouseleave", () => {
+        avatarCard.style.transform =
+          "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0px)";
+      });
+    }
+
+    // Loader hide
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      if (!loader) return;
+      setTimeout(() => {
+        loader.classList.add("loader-hide");
+      }, 700);
+    });
+
+    // Nav underline glow (desktop)
+    const navItems = document.querySelectorAll(".nav-item");
+    const navGlow = document.getElementById("navGlow");
+    const navWrapper = document.getElementById("navWrapper");
+    let activeItem = null;
+
+    function moveGlow(el) {
+      if (!navGlow || !navWrapper || !el) return;
+      const rect = el.getBoundingClientRect();
+      const parentRect = navWrapper.getBoundingClientRect();
+      const extra = 14;
+      navGlow.style.width = rect.width + extra + "px";
+      navGlow.style.transform =
+        `translateX(${rect.left - parentRect.left - extra / 2}px)`;
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener("mouseenter", () => moveGlow(item));
+      item.addEventListener("mouseleave", () => activeItem && moveGlow(activeItem));
+
+      item.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = item.getAttribute("href");
+        const section = document.querySelector(id);
+        if (!section) return;
+
+        activeItem = item;
+        moveGlow(item);
+
+        window.scrollTo({
+          top: section.offsetTop - 100,
+          behavior: "smooth"
+        });
+      });
+    });
+
+    window.addEventListener("load", () => {
+      const first = document.querySelector('.nav-item[href="#about"]');
+      if (first) {
+        activeItem = first;
+        moveGlow(first);
+      }
+    });
+
+    // Navbar scroll shrink
+    const navbar = document.getElementById("navbar");
+    window.addEventListener("scroll", () => {
+      if (!navbar) return;
+      if (window.scrollY > 10) {
+        navbar.classList.add("nav-scrolled");
+      } else {
+        navbar.classList.remove("nav-scrolled");
+      }
+    });
+
+    // Theme switch + GSAP fade
+    const themeToggle = document.getElementById("themeToggle");
+    const themeCircle = document.getElementById("themeCircle");
+    const themeToggleMobile = document.getElementById("themeToggleMobile");
+    const themeCircleMobile = document.getElementById("themeCircleMobile");
+
+    function setDarkMode(enabled) {
+      if (enabled) {
+        document.body.classList.add("dark");
+      } else {
+        document.body.classList.remove("dark");
+      }
+
+      if (themeCircle) {
+        themeCircle.style.transform = enabled ? "translateX(24px)" : "translateX(0px)";
+      }
+      if (themeCircleMobile) {
+        themeCircleMobile.style.transform = enabled ? "translateX(16px)" : "translateX(0px)";
+      }
+
+      localStorage.setItem("theme", enabled ? "dark" : "light");
+    }
+
+    // Load saved theme
+    setDarkMode(localStorage.getItem("theme") === "dark");
+
+    if (themeToggle) {
+      themeToggle.addEventListener("click", () => {
+        const isDark = !document.body.classList.contains("dark");
+
+        gsap.to("body", {
+          opacity: 0,
+          duration: 0.12,
+          onComplete: () => {
+            setDarkMode(isDark);
+            gsap.to("body", { opacity: 1, duration: 0.22 });
+          }
+        });
+      });
+    }
+
+    if (themeToggleMobile) {
+      themeToggleMobile.addEventListener("click", () => {
+        const isDark = !document.body.classList.contains("dark");
+        setDarkMode(isDark);
+      });
+    }
+
+    // MOBILE MENU + SLIDE + FADE ANIMATION
+    const menuBtn = document.getElementById("menuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const mobileLinks = document.querySelectorAll("#mobileMenu .mobile-link");
+
+    let menuOpen = false;
+
+    function openMenu() {
+      if (!mobileMenu) return;
+      mobileMenu.classList.remove("hidden");
+      gsap.fromTo(mobileMenu,
+        { opacity: 0, y: -10, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.25, ease: "power2.out" }
+      );
+      menuOpen = true;
+    }
+
+    function closeMenu() {
+      if (!mobileMenu) return;
+      gsap.to(mobileMenu, {
+        opacity: 0,
+        y: -8,
+        scale: 0.98,
+        duration: 0.18,
+        ease: "power1.out",
+        onComplete: () => {
+          mobileMenu.classList.add("hidden");
+        }
+      });
+      menuOpen = false;
+    }
+
+    if (menuBtn && mobileMenu) {
+      menuBtn.addEventListener("click", () => {
+        if (menuOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+    }
+
+    // Close mobile menu on link click + smooth scroll
+    mobileLinks.forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = link.getAttribute("href");
+        const section = document.querySelector(id);
+        if (section) {
+          window.scrollTo({
+            top: section.offsetTop - 90,
+            behavior: "smooth"
+          });
+        }
+        closeMenu();
+      });
+    });
+  </script>
+</body>
+</html>
